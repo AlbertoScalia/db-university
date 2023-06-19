@@ -1,0 +1,140 @@
+-------------------------------------------------------------------------------------------------
+---------------------------------------- QUERY --- JOIN -----------------------------------------
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 1 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT
+students.id,
+students.surname,
+students.name,
+students.fiscal_code
+FROM students
+JOIN degrees ON students.degree_id = degrees.id
+WHERE degrees.name = 'Corso di Laurea in Economia';
+
+Select all the students enrolled in the degree 'Corso di Laurea in Economia'
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 2 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT 
+courses.id,
+courses.name,
+courses.description,
+courses.cfu,
+courses.website
+FROM `courses`
+JOIN degrees ON courses.degree_id = degrees.id
+JOIN departments ON degrees.department_id = departments.id
+WHERE degrees.level = 'magistrale'
+AND departments.name = 'Dipartimento di Neuroscienze';
+
+Select all the courses with the level 'magistrale' of the department 'Dipartimento di Neuroscienze'
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 3 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT 
+courses.id,
+courses.name,
+courses.description,
+courses.cfu,
+courses.website
+FROM `course_teacher`
+JOIN courses ON courses.id = course_teacher.course_id
+JOIN teachers ON teachers.id = course_teacher.teacher_id
+WHERE teachers.id = 44;
+
+Select all the courses where the teacher with id 44 teachs
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 4 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT 
+students.id AS 'student_id',
+students.registration_number,
+students.surname,
+students.name,
+students.fiscal_code,
+students.email,
+departments.id AS 'department_id',
+departments.name AS 'department_name',
+degrees.id AS 'degree_id',
+degrees.name AS 'degree_name',
+degrees.level AS 'degree_level'
+FROM `students`
+JOIN degrees ON students.degree_id = degrees.id
+JOIN departments ON degrees.department_id = departments.id
+ORDER BY students.surname, students.name;
+
+Select for each student (ordered by surname and name) the department and degree data
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 5 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT
+degrees.id AS 'degree_id',
+degrees.name AS 'degree_name',
+degrees.level AS 'degree_level',
+courses.id AS 'course_id',
+courses.name AS 'course_name',
+courses.description AS 'course_description',
+course_teacher.teacher_id AS 'teacher_id',
+teachers.surname AS 'teacher_surname',
+teachers.name AS 'teacher_name'
+FROM courses
+JOIN degrees ON courses.degree_id = degrees.id
+JOIN course_teacher ON courses.id = course_teacher.course_id
+JOIN teachers ON course_teacher.teacher_id = teachers.id
+ORDER BY degrees.id,courses.id,teachers.surname,teachers.name;
+
+Select all the degrees with courses and teachers data, ordered by the degrees id, the courses id 
+and the surname and the name of the teacher
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 6 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT
+teachers.id AS 'teacher_id',
+teachers.surname AS 'teacher_surname',
+teachers.name AS 'teacher_name'
+FROM courses
+JOIN degrees ON courses.degree_id = degrees.id
+JOIN course_teacher ON courses.id = course_teacher.course_id
+JOIN teachers ON course_teacher.teacher_id = teachers.id
+JOIN departments ON departments.id = degrees.department_id
+WHERE departments.name = 'Dipartimento di Matematica'
+GROUP BY teachers.surname,teachers.name;
+
+Select all the teachers of the department 'Dipartimento di Matematica'
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------- QUERY 7 --------------------------------------------
+-------------------------------------------------------------------------------------------------
+SELECT
+students.id AS 'student_id',
+students.surname AS 'student_surname',
+students.name AS 'student_name',
+courses.id AS 'course_id',
+courses.name AS 'course_name',
+COUNT(exam_student.vote) AS 'number_of_attemps',
+MIN(exam_student.vote) AS 'min_vote',
+MAX(exam_student.vote) AS 'max_vote'
+FROM students
+JOIN exam_student ON students.id = exam_student.student_id
+JOIN exams ON exam_student.exam_id = exams.id
+JOIN courses ON exams.course_id = courses.id
+GROUP BY students.id,courses.id
+ORDER BY students.id,courses.id,exams.date,exams.hour;
+
+Select for each students the number of attempt to pass each exam (show also the min and max vote 
+for each exam)
+-------------------------------------------------------------------------------------------------
